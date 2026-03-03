@@ -2,6 +2,9 @@
 README.rst
 .DS_Store
 
+# Cline CLI local configuration
+.cline-config/
+
 # compiled tests
 brender_*.py
 
