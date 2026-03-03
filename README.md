@@ -27,6 +27,7 @@ Unlike the old approach of generating scripts and executing Blender externally, 
 - **Materials**: Flat colors, emissive materials, transparent surfaces, PBR shaders, and SEM-style materials
 - **Lighting**: Point lights and sun lamps with customizable intensity
 - **Camera Control**: Flexible camera positioning and targeting
+- **Volume Rendering**: Save 3D arrays to OpenVDB format for volume rendering
 - **Direct bpy Integration**: Uses official Blender Python module for seamless integration
 - **Multi-Scene Support**: Create and manage multiple independent scenes
 - **MCP Server**: Model Context Protocol server for AI-assisted scene creation
@@ -193,6 +194,37 @@ scene2.render(camera_location=[4, -4, 3])
 **Scene 2 (Blue Box):**
 
 ![Multi-Scene Example 2](assets/06_multi_scene_2.png)
+
+## Volume Rendering with VDB
+
+bpwf includes utilities for saving 3D arrays to OpenVDB format for volume rendering in Blender:
+
+```python
+import numpy as np
+from bpwf import save_vdb, load_vdb
+
+# Create 3D data (e.g., a sphere)
+size = 50
+center = size // 2
+radius = 15
+
+x, y, z = np.ogrid[:size, :size, :size]
+distance = np.sqrt((x - center)**2 + (y - center)**2 + (z - center)**2)
+data = np.where(distance <= radius, 1.0, 0.0).astype(np.float32)
+
+# Save to VDB format
+save_vdb(data, "sphere.vdb", voxel_size=0.1)
+
+# Load VDB file back to numpy array
+loaded_data = load_vdb("sphere.vdb")
+```
+
+The VDB utilities support:
+- **Multiple input formats**: Python lists, numpy arrays, or PyTorch tensors
+- **Automatic fallback**: Uses pyopenvdb if available, falls back to Docker if not
+- **Easy integration**: Generated VDB files can be loaded directly in Blender for volume rendering
+
+See `examples/07_vdb_volume.py` for more examples.
 
 ## MCP Server
 
